@@ -1,0 +1,4 @@
+provider:
+  region: eu-west-1
+  environment: 
+    testLambdaVariable: Lambda Environment "${opt:stage, 'dev'}" Variable

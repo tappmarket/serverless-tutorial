@@ -1,0 +1,26 @@
+# Service Name
+service: http-event-example-${opt:stage, 'dev'}
+
+# plugins
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  region: ${file(./yml/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
+  environment:
+    ${file(./yml/${opt:stage, 'dev'}.yml):provider.environment}
+
+package:
+  individually: true
+
+functions:
+  httpEvent:
+    handler: index.main_handler
+    name: http-event
+    events:
+      - http:
+          path: http-event
+          method: get
