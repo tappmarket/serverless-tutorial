@@ -19,8 +19,8 @@ package:
 functions:
   httpEvent:
     handler: index.main_handler
-    name: http-api
+    name: httpApi
     events:
       - httpApi:
-          path: http-api
+          path: httpApi
           method: get

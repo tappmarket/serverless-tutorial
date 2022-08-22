@@ -1,6 +1,7 @@
 const path = require("path");
 const axios = require("axios");
 let env = "local";
+console.log("process.env.npm_config_dev", process.env);
 if (process.env.npm_config_dev) {
   env = "dev";
 }

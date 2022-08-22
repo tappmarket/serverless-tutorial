@@ -26,12 +26,28 @@ provider:
   name: aws
   runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
+  endpointType: REGIONAL
   region: ${file(./yml/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
   environment:
     ${file(./yml/${opt:stage, 'dev'}.yml):provider.environment}
-
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource: "*"
+  layers:
+    - { Ref: ChromePreBuiltLambdaLayer }
 package:
   individually: true
+  exclude:
+    - ./**
+
+layers:
+  chromePreBuilt:
+    path: lambda-layer-dir
+    package:
+      include:
+        - ./**
 
 functions:
   create:
@@ -40,12 +56,17 @@ functions:
       - httpApi:
           path: /create
           method: post
+    package:
+      include:
+        - index.js          
   list:
     handler: index.list
     events:
       - httpApi:
           path: /list
           method: get
-          
+    package:
+      include:
+        - index.js          
 resources:
   - ${file(./local/db/table/table_example.yml)}

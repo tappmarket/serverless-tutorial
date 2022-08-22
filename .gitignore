@@ -55,3 +55,4 @@ credentials.json
 token.json
 
 .venv/
+.dynamodb
