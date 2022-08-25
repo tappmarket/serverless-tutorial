@@ -1,5 +1,5 @@
 # Service Name
-service: http-event-example-${opt:stage, 'dev'}
+service: http-api-dynamodb-example-${opt:stage, 'dev'}
 
 # plugins
 plugins:
@@ -36,14 +36,15 @@ provider:
         - dynamodb:*
       Resource: "*"
   layers:
-    - { Ref: ChromePreBuiltLambdaLayer }
+    - { Ref: DynamodbExampleLambdaLayer }
 package:
   individually: true
   exclude:
     - ./**
-
+  include:
+    - ./lib/**
 layers:
-  chromePreBuilt:
+  dynamodbExample:
     path: lambda-layer-dir
     package:
       include:
