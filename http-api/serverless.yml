@@ -1,5 +1,5 @@
 # Service Name
-service: http-event-example-${opt:stage, 'dev'}
+service: http-api-example-${opt:stage, 'dev'}
 
 # plugins
 plugins:
@@ -22,5 +22,5 @@ functions:
     name: httpApi
     events:
       - httpApi:
-          path: httpApi
+          path: /httpApi
           method: get
