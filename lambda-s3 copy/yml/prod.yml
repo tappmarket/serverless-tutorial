@@ -1,0 +1,6 @@
+custom:
+  bucket: lambda-s3-example-bucket-prod
+provider:
+  region: eu-west-1
+  environment: 
+    testLambdaVariable: Lambda Environment "${opt:stage, 'prod'}" Variable

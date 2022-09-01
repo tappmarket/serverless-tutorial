@@ -1,0 +1,14 @@
+provider:
+  region: eu-west-1
+  environment: 
+    testLambdaVariable: Lambda Environment "${opt:stage, 'prod'}" Variable
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  accessKeyId: "S3RVER"
+  secretAccessKey: "S3RVER"
+  s3:
+    protocol: 'https://'
+    host: localhost
+    port: 8000
+    directory: ./s3-local
+    bucketName: lambda-s3-example-${opt:stage, 'prod'}

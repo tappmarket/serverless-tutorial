@@ -1,0 +1,14 @@
+
+custom:
+  bucket: lambda-s3-example-bucket-dev
+provider:
+  region: eu-west-1
+  environment: 
+    iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+            Resource: "arn:aws:s3:::${self:custom.s3.bucket}/*"

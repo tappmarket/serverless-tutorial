@@ -1,0 +1,84 @@
+# Service Name
+service: lambda-s3-example-${opt:stage, 'dev'}
+
+# plugins
+plugins:
+  - serverless-offline
+  - serverless-s3-local
+
+custom:
+   ${file(./yml/${opt:stage, 'dev'}.yml):custom}
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  endpointType: REGIONAL
+  region: ${file(./yml/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
+  environment:
+    ${file(./yml/${opt:stage, 'dev'}.yml):provider.environment}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:Get*
+        - s3:List*
+        - s3:Put*
+      Resource: "arn:aws:s3:::${self:custom.s3.bucketName}/*"
+  layers:
+    - { Ref: LambdaS3ExampleLambdaLayer }
+package:
+  individually: true
+  exclude:
+    - ./**
+  include:
+    - ./lib/**
+layers:
+  lambdaS3Example:
+    path: lambda-layer-dir
+    package:
+      include:
+        - ./**
+
+resources:
+  Resources:
+    NewResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.s3.bucketName}
+
+functions:
+  upload:
+    handler: index.upload
+    events:
+      - httpApi:
+          path: /upload
+          method: post
+    environment:
+      ACCESS_KEY_ID: ${self:custom.accessKeyId}
+      SECRET_ACCESS_KEY: ${self:custom.secretAccessKey}
+      S3_PROTOCOL: ${self:custom.s3.protocol}
+      S3_HOST: ${self:custom.s3.host}
+      S3_PORT: ${self:custom.s3.port}
+      S3_DIRECTORY: ${self:custom.s3.directory}
+      S3_BUCKET_NAME: ${self:custom.s3.bucketName}
+    package:
+      include:
+        - index.js
+  list:
+    handler: index.list
+    events:
+      - httpApi:
+          path: /list
+          method: get
+    environment:
+      ACCESS_KEY_ID: ${self:custom.accessKeyId}
+      SECRET_ACCESS_KEY: ${self:custom.secretAccessKey}
+      S3_PROTOCOL: ${self:custom.s3.protocol}
+      S3_HOST: ${self:custom.s3.host}
+      S3_PORT: ${self:custom.s3.port}
+      S3_DIRECTORY: ${self:custom.s3.directory}
+      S3_BUCKET_NAME: ${self:custom.s3.bucketName}
+    package:
+      include:
+        - index.js
+
