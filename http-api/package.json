@@ -12,7 +12,9 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.1194.0",
-    "serverless-dynamodb-local": "^0.2.40",
-    "serverless-offline": "^9.2.0"
+    "serverless-dynamodb-local": "^0.2.40"
+  },
+  "devDependencies": {
+    "serverless-offline": "^9.2.6"
   }
 }
