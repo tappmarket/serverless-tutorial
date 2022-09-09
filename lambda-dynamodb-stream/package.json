@@ -1,0 +1,27 @@
+{
+  "name": "my-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install-local-db": "sls dynamodb install",
+    "local": "npm run install-local-db && serverless offline start --stage local",
+    "pretest": "mocha ./test/index.js"
+  },
+  "keywords": [],
+  "author": "unknow <unknow@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.1194.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "mocha": "^10.0.0",
+    "serverless-dynamodb-local": "^0.2.40",
+    "serverless-dynamodb-seed": "^0.3.0",
+    "serverless-layers": "^2.5.4",
+    "serverless-offline": "^9.2.0",
+    "serverless-plugin-offline-dynamodb-stream": "^1.0.20",
+    "uuid": "^8.3.2"
+  }
+}

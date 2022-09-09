@@ -1,0 +1,86 @@
+# Service Name
+service: http-api-dynamodb-example-${opt:stage, 'dev'}
+
+# plugins
+plugins:
+  - serverless-offline
+  - serverless-dynamodb-local
+  - serverless-plugin-offline-dynamodb-stream
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  dynamodb:
+    region: ${self:provider.region}
+    stages:
+      - ${opt:stage, self:provider.stage}
+    start:
+      host: localhost
+      port: 8000
+      inMemory: false
+      migrate: true
+      seed: false
+    seed:
+      domain:
+        sources:
+          - table: table_example
+            sources: [./local/db/seed/table_example.json]
+  dynamodbStream:
+      host: ${self:custom.dynamodb.start.host}
+      port: ${self:custom.dynamodb.start.port}
+      region: ${self:provider.region}
+      streams:
+        - table: table_example
+          functions:
+            - dynamoDBStreamCallback
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  endpointType: REGIONAL
+  region: ${file(./yml/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
+  environment:
+    ${file(./yml/${opt:stage, 'dev'}.yml):provider.environment}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource: "*"
+  layers:
+    - { Ref: DynamodbExampleLambdaLayer }
+package:
+  individually: true
+  exclude:
+    - ./**
+  include:
+    - ./lib/**
+layers:
+  dynamodbExample:
+    path: lambda-layer-dir
+    package:
+      include:
+        - ./**
+
+functions:
+  create:
+    handler: index.create
+    events:
+      - httpApi:
+          path: /create
+          method: post
+    package:
+      include:
+        - index.js          
+  list:
+    handler: index.list
+    events:
+      - httpApi:
+          path: /list
+          method: get
+    package:
+      include:
+        - index.js
+  dynamoDBStreamCallback:
+    handler: stream.handle
+
+resources:
+  - ${file(./local/db/table/table_example.yml)}

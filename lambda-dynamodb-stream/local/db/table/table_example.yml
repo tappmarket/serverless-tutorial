@@ -1,0 +1,22 @@
+  Resources:
+    product:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy : Retain
+      Properties:
+        TableName: table_example
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        #DynamoDB 中表的 DynamoDB Streams 配置。 
+        StreamSpecification:
+          #流视图类型
+          #   当表中的一项被修改时， StreamViewType决定什么 信息被写入该表的流中。 有效值 StreamViewType是：
+          #     KEYS_ONLY- 仅修改项目的关键属性是 写入流。
+          #     NEW_IMAGE- 修改后出现的整个项目， 被写入流。
+          #     OLD_IMAGE- 整个项目，正如它在修改之前出现的那样， 被写入流。
+          #     NEW_AND_OLD_IMAGES- 新旧物品图片 项目被写入流。
+          StreamViewType: NEW_IMAGE
