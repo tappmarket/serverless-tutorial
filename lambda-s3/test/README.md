@@ -8,23 +8,24 @@
 # Run all dev test
 
 ```sh
-npm run test -dev
+npm run test -stage=dev
 ```
 
 # Run all local test
 
 ```sh
-npm run test -local
+npm run test
 ```
 
 # Run one file dev test
 
 ```sh
-npm run test -dev -name=filename
+npm run test -stage=dev -name=filename
 ```
 
 # Run one file local test
 
 ```sh
-npm run test -local -name=filename
+npm run test -stage=local -name=filename
 ```
+

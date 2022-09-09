@@ -1,4 +1,0 @@
-server-tests
---recursive
---bail
---timeout 30000

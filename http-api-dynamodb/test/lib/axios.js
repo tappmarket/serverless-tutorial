@@ -1,13 +1,8 @@
 const path = require("path");
 const axios = require("axios");
-let env = "local";
-console.log("process.env.npm_config_dev", process.env);
-if (process.env.npm_config_dev) {
-  env = "dev";
-}
 
 require("dotenv").config({
-  path: path.join(__dirname, "../", "/.env." + env),
+  path: path.join(__dirname, `../.env.${process.env.npm_config_stage || "local"}`),
 });
 
 axios.defaults.baseURL = process.env.API_URL || "";
@@ -16,16 +11,14 @@ axios.defaults.baseURL = process.env.API_URL || "";
 axios.interceptors.request.use(
   (config) => {
     // do something before request is sent
-
     config.headers["Authorization"] = process.env.TOKEN;
-    console.log("process.env.TOKEN", process.env.TOKEN);
     if (config.method == "post") {
       console.log("Post url:", config.baseURL + config.url);
-      console.log("Post data:", config.data);
+      //console.log("Post data:", config.data);
     }
     if (config.method == "get") {
       console.log("Get url:", config.baseURL + config.url);
-      console.log("Get Params:", config.params);
+      // console.log("Get Params:", config.params);
     }
 
     return config;

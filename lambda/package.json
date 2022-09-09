@@ -8,7 +8,7 @@
     "local": "serverless offline start --stage local"
   },
   "keywords": [],
-  "author": "Iswoter <iswoter@gmail.com>",
+  "author": "unknow <unknow@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.1194.0",

@@ -10,13 +10,16 @@ describe(`s3 test`, async function () {
   it(`Test put file to buket`, async function () {
     //  this.timeout(1500000);
 
-    const imgBuffer = await fs.createReadStream(path.resolve(__dirname, "../testFile/1.jpg"));
-    const postFormData = new FormData();
-    postFormData.append("attach", imgBuffer, "test.jpg");
-    await axios.post(`upload`, postFormData, { "Content-type": "multipart/form-data" }).then(async (res) => {
-      console.log("res:", res);
-      //assert.equal(res, "path");
-    });
+    const imgBase64 = await fs.readFileSync(path.resolve(__dirname, "../testFile/1.jpg"), "base64");
+
+    await axios
+      .post(`upload`, {
+        image: imgBase64,
+      })
+      .then(async (res) => {
+        console.log("res:", res);
+        //assert.equal(res, "path");
+      });
   });
 });
 
