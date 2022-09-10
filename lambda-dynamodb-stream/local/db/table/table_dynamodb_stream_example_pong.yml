@@ -1,0 +1,14 @@
+  # Receive stream data table
+  Resources:
+    TableDynamodbStreamExamplePong:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy : Retain
+      Properties:
+        TableName: table_dynamodb_stream_example_pong
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST

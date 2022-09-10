@@ -6,7 +6,6 @@ module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
   if (typeof data.text !== "string") {
-    console.error("Validation Failed");
     callback(null, {
       statusCode: 400,
       headers: { "Content-Type": "text/plain" },
@@ -16,7 +15,7 @@ module.exports.create = (event, context, callback) => {
   }
 
   const params = {
-    TableName: "table_example",
+    TableName: "table_dynamodb_stream_example_ping",
     Item: {
       id: uuid.v1(),
       text: data.text,
@@ -25,7 +24,6 @@ module.exports.create = (event, context, callback) => {
     },
   };
 
-  // write the todo to the database
   dynamodb.put(params, (error) => {
     // handle potential errors
     if (error) {
@@ -49,7 +47,7 @@ module.exports.create = (event, context, callback) => {
 
 module.exports.list = (event, context, callback) => {
   const params = {
-    TableName: "table_example",
+    TableName: "table_dynamodb_stream_example_ping",
   };
 
   // fetch all todos from the database

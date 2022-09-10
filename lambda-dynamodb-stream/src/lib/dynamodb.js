@@ -7,11 +7,13 @@ let options = {};
 // connect to local DB if running offline
 if (process.env.IS_OFFLINE) {
   options = {
-    region: "localhost",
+    region: process.env.AWS_REGION,
     endpoint: "http://localhost:8000",
   };
+  console.log("options", options);
 }
 
 const client = new AWS.DynamoDB.DocumentClient(options);
 
 module.exports = client;
+

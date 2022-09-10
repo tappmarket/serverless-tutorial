@@ -1,9 +1,10 @@
+  # Stream trigger table
   Resources:
-    product:
+    TableDynamodbStreamExamplePing:
       Type: AWS::DynamoDB::Table
       DeletionPolicy : Retain
       Properties:
-        TableName: table_example
+        TableName: table_dynamodb_stream_example_ping
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

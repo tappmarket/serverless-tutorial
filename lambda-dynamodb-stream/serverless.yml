@@ -1,5 +1,5 @@
 # Service Name
-service: http-api-dynamodb-example-${opt:stage, 'dev'}
+service: lambda-dynamodb-stream-example-${opt:stage, 'dev'}
 
 # plugins
 plugins:
@@ -19,19 +19,18 @@ custom:
       inMemory: false
       migrate: true
       seed: false
-    seed:
-      domain:
-        sources:
-          - table: table_example
-            sources: [./local/db/seed/table_example.json]
+  # DynamoDB 流配置
   dynamodbStream:
       host: ${self:custom.dynamodb.start.host}
       port: ${self:custom.dynamodb.start.port}
       region: ${self:provider.region}
+      environment:
       streams:
-        - table: table_example
+        - table: table_dynamodb_stream_example_ping
+          # DynamoDB 流接收函数 
           functions:
             - dynamoDBStreamCallback
+
 provider:
   name: aws
   runtime: nodejs14.x
@@ -46,15 +45,15 @@ provider:
         - dynamodb:*
       Resource: "*"
   layers:
-    - { Ref: DynamodbExampleLambdaLayer }
+    - { Ref: DynamodbStreamExampleLambdaLayer }
 package:
   individually: true
   exclude:
     - ./**
   include:
-    - ./lib/**
+    - ./src/lib/**
 layers:
-  dynamodbExample:
+  dynamodbStreamExample:
     path: lambda-layer-dir
     package:
       include:
@@ -62,25 +61,45 @@ layers:
 
 functions:
   create:
-    handler: index.create
+    handler: src/ping.create
     events:
       - httpApi:
           path: /create
           method: post
     package:
       include:
-        - index.js          
+        - ./src/ping.js        
   list:
-    handler: index.list
+    handler: src/ping.list
     events:
       - httpApi:
           path: /list
           method: get
     package:
       include:
-        - index.js
+        - ./src/ping.js
+
+  # DynamoDB 流接收函数      
   dynamoDBStreamCallback:
-    handler: stream.handle
+    handler: src/pong.handle
+    environment:
+      region: ${self:provider.region}
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 1
+          startingPosition: LATEST
+          enabled: true
+          arn:
+            Fn::GetAtt:
+              - TableDynamodbStreamExamplePing
+              - StreamArn
+    package:
+      include:
+        - src/pong.js
 
 resources:
-  - ${file(./local/db/table/table_example.yml)}
+  # Stream trigger table
+  - ${file(./local/db/table/table_dynamodb_stream_example_ping.yml)}
+  # Receive stream data table
+  - ${file(./local/db/table/table_dynamodb_stream_example_pong.yml)}
