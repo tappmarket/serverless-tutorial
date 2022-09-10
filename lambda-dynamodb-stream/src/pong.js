@@ -4,7 +4,7 @@ const uuid = require("uuid");
 
 module.exports.handle = async (event) => {
   console.log("process.env", process.env);
-  const timestamp = new Date().getTime();
+  const timestamp = new Date().toISOString();
 
   for (const record of event.Records) {
     console.log(record.eventID);
@@ -15,10 +15,24 @@ module.exports.handle = async (event) => {
       TableName: "table_dynamodb_stream_example_pong",
       Item: {
         id: uuid.v1(),
+        eventID: record.eventID,
+        eventName: record.eventName,
         createdAt: timestamp,
         updatedAt: timestamp,
       },
     };
+    switch (record.eventName) {
+      case "INSERT":
+        params.Item.receivedData = record.dynamodb.NewImage;
+        console.log("pingDB.NewImage:", record.dynamodb.NewImage);
+        break;
+      case "MODIFY":
+        // TODO: operations
+        break;
+      case "REMOVE":
+        // TODO: operations
+        break;
+    }
     await Dynamodb.put(params).promise();
   }
 };

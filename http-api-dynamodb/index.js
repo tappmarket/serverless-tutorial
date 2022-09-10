@@ -3,7 +3,7 @@ const uuid = require("uuid");
 const dynamodb = require("./lib/dynamodb");
 
 module.exports.create = (event, context, callback) => {
-  const timestamp = new Date().getTime();
+  const timestamp = new Date().toISOString();
   const data = JSON.parse(event.body);
   if (typeof data.text !== "string") {
     console.error("Validation Failed");
