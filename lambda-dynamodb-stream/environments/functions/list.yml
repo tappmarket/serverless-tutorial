@@ -1,0 +1,9 @@
+  list:
+    handler: src/ping.list
+    events:
+      - httpApi:
+          path: /list
+          method: get
+    package:
+      include:
+        - ./src/ping.js

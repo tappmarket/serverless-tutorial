@@ -1,0 +1,16 @@
+provider:
+  region: eu-west-1
+  environment: 
+    testLambdaVariable: Lambda Environment "${opt:stage, 'dev'}" Variable
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  dynamodb:
+    region: ${self:provider.region}
+    stages:
+      - ${opt:stage, self:provider.stage}
+    start:
+      host: localhost
+      port: 8000
+      inMemory: false
+      migrate: true
+      seed: false

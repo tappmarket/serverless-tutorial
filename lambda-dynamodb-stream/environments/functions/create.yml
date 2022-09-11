@@ -1,0 +1,9 @@
+  create:
+    handler: src/ping.create
+    events:
+      - httpApi:
+          path: /create
+          method: post
+    package:
+      include:
+        - ./src/ping.js    

@@ -1,5 +1,5 @@
   Resources:
-    product:
+    tableExample:
       Type: AWS::DynamoDB::Table
       DeletionPolicy : Retain
       Properties:

@@ -1,0 +1,18 @@
+  # DynamoDB 流接收函数      
+  dynamoDBStreamCallback:
+    handler: src/pong.handle
+    environment:
+      region: ${self:provider.region}
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 1
+          startingPosition: LATEST
+          enabled: true
+          arn:
+            Fn::GetAtt:
+              - TableDynamodbStreamExamplePing
+              - StreamArn
+    package:
+      include:
+        - src/pong.js

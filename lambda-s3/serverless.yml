@@ -7,16 +7,16 @@ plugins:
   - serverless-s3-local
 
 custom:
-   ${file(./yml/${opt:stage, 'dev'}.yml):custom}
+   ${file(./environments/${opt:stage, 'dev'}.yml):custom}
 
 provider:
   name: aws
   runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
   endpointType: REGIONAL
-  region: ${file(./yml/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
+  region: ${file(./environments/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
   environment:
-    ${file(./yml/${opt:stage, 'dev'}.yml):provider.environment}
+    ${file(./environments/${opt:stage, 'dev'}.yml):provider.environment}
   iamRoleStatements:
     - Effect: Allow
       Action:

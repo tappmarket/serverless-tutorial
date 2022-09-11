@@ -51,7 +51,6 @@ module.exports.list = (event, context, callback) => {
   const params = {
     TableName: "table_example",
   };
-
   // fetch all todos from the database
   dynamodb.scan(params, (error, result) => {
     // handle potential errors

@@ -1,63 +1,43 @@
-# 快速构建 scf-nodejs
+# Lambda Http API Example
 
-**中文** | [English](./README_EN.md)
+## Files
 
-## 简介
+- `package.json` - Points to the app's main file and lists its details and dependencies.
+- `serverless.yml` - A service is configured via a `serverless.yml` file where you define your functions, the events that trigger them, and the AWS resources to deploy.
+- `environments` - `serverless.yml` extension configuration file storage directory
+- `index.js` - This example mainly runs javascript functions
+- `deploy.sh` - Serverless deploy bash script
 
-scf-nodejs 模板使用 Tencent SCF 组件及其触发器能力，方便的在腾讯云创建，配置和管理一个 scf-nodejs 应用。
+## To Use
 
-## 快速开始
-
-### 1. 安装
-
-```bash
-# 安装 Serverless Framework
-npm install -g serverless
-```
-
-### 2. 创建
-
-通过如下命令直接下载该例子：
+To clone and run this repository you'll need Node.js (which comes with npm) installed on your computer. From your command line:
 
 ```bash
-serverless init scf-nodejs --name example
-cd example
+# Install dependencies
+npm install
+# Run the local test
+npm run local
+# Or you can run this
+serverless offline start --stage local
 ```
 
-### 3. 部署
+`serverless offline start --stage local`, which means to call the `local.yml` environment variable configuration file in the `environments` directory. For example `serverless offline start --stage dev`, then call `dev.yml`
 
-在 `serverless.yml` 文件所在的项目根目录，运行以下指令，将会弹出二维码，直接扫码授权进行部署：
+## Environment Variable Settings
+
+`serverless.yml` will load yml configuration in `environments` directory according to `stage`
+
+- Storage and naming of environment variable files - Configuration files like `local.yml` are stored in `environments`, and these files are named and called according to the `stage` in which the project is running.
+- Environment variable invocation rules - In `serverless.yml` you can use such a rule for environment variable invocation: ` ${file(./environments/${opt:stage, 'dev'}.yml):<parent>.<child>}`, for example: ` ${file(./environments/${opt:stage, 'dev'}.yml):provider.environment}`
+
+## Deploy
 
 ```bash
-serverless deploy
+./deploy.sh dev
 ```
 
-> **说明**：如果鉴权失败，请参考 [权限配置](https://cloud.tencent.com/document/product/1154/43006) 进行授权。
+`./deploy.sh dev`, meaning: `AWS_PROFILE=dev sls deploy --stage=dev --force`
 
-### 4. 查看状态
-
-执行以下命令，查看您部署的项目信息：
-
-```bash
-serverless info
-```
-
-### 5. 移除
-
-可以通过以下命令移除 scf-nodejs 应用
-
-```bash
-serverless remove
-```
-
-```bash
-#配置信息
-touch .env
-```
-
-```
-# .env file
-TENCENT_SECRET_ID=123
-TENCENT_SECRET_KEY=123
-```
+- `AWS_PROFILE=dev` - `AWS PROFILE` refers to the AWS account information you have added locally. The name of the PROFILE information is `dev`
+- `--stage=dev` - refers to the name of the `stage` to be deployed to, `serverless.yml` will call the variable file in the `environments` directory according to the value in `--stage=dev`.
 

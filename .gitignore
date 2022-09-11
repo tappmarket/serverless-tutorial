@@ -56,4 +56,5 @@ token.json
 
 .venv/
 .dynamodb
-dev*.yml
+
+dev2.yml

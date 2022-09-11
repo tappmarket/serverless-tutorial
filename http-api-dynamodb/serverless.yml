@@ -1,35 +1,24 @@
 # Service Name
 service: http-api-dynamodb-example-${opt:stage, 'dev'}
 
-# plugins
+# Plugins
 plugins:
   - serverless-offline
   - serverless-dynamodb-local
 
-custom:
-  stage: ${opt:stage, self:provider.stage}
-  dynamodb:
-    stages:
-      - ${opt:stage, self:provider.stage}
-    start:
-      port: 8000
-      inMemory: false
-      migrate: true
-      seed: false
-    seed:
-      domain:
-        sources:
-          - table: table_example
-            sources: [./local/db/seed/table_example.json]
+# Custom
+custom: 
+  ${file(./environments/${opt:stage, 'dev'}.yml):custom}
 
+# Provider
 provider:
   name: aws
   runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
   endpointType: REGIONAL
-  region: ${file(./yml/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
+  region: ${file(./environments/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
   environment:
-    ${file(./yml/${opt:stage, 'dev'}.yml):provider.environment}
+    ${file(./environments/${opt:stage, 'dev'}.yml):provider.environment}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -37,12 +26,16 @@ provider:
       Resource: "*"
   layers:
     - { Ref: DynamodbExampleLambdaLayer }
+
+# Package
 package:
   individually: true
   exclude:
     - ./**
   include:
-    - ./lib/**
+    - ./src/lib/**
+
+# Layers
 layers:
   dynamodbExample:
     path: lambda-layer-dir
@@ -50,24 +43,11 @@ layers:
       include:
         - ./**
 
+# Functions
 functions:
-  create:
-    handler: index.create
-    events:
-      - httpApi:
-          path: /create
-          method: post
-    package:
-      include:
-        - index.js          
-  list:
-    handler: index.list
-    events:
-      - httpApi:
-          path: /list
-          method: get
-    package:
-      include:
-        - index.js          
+  - ${file(./environments/functions/create.yml)}
+  - ${file(./environments/functions/list.yml)}
+
+# Resources
 resources:
-  - ${file(./local/db/table/table_example.yml)}
+  - ${file(./environments/tables/table_example.yml)}

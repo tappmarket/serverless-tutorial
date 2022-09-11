@@ -6,39 +6,20 @@ plugins:
   - serverless-offline
   - serverless-dynamodb-local
   - serverless-plugin-offline-dynamodb-stream
+  
+# Custom
+custom: 
+  ${file(./environments/${opt:stage, 'dev'}.yml):custom}
 
-custom:
-  stage: ${opt:stage, self:provider.stage}
-  dynamodb:
-    region: ${self:provider.region}
-    stages:
-      - ${opt:stage, self:provider.stage}
-    start:
-      host: localhost
-      port: 8000
-      inMemory: false
-      migrate: true
-      seed: false
-  # DynamoDB 流配置
-  dynamodbStream:
-      host: ${self:custom.dynamodb.start.host}
-      port: ${self:custom.dynamodb.start.port}
-      region: ${self:provider.region}
-      environment:
-      streams:
-        - table: table_dynamodb_stream_example_ping
-          # DynamoDB 流接收函数 
-          functions:
-            - dynamoDBStreamCallback
-
+# Provider
 provider:
   name: aws
   runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
   endpointType: REGIONAL
-  region: ${file(./yml/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
+  region: ${file(./environments/${opt:stage, 'dev'}.yml):provider.region, 'eu-west-1'}
   environment:
-    ${file(./yml/${opt:stage, 'dev'}.yml):provider.environment}
+    ${file(./environments/${opt:stage, 'dev'}.yml):provider.environment}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -46,12 +27,15 @@ provider:
       Resource: "*"
   layers:
     - { Ref: DynamodbStreamExampleLambdaLayer }
+
 package:
   individually: true
   exclude:
     - ./**
   include:
     - ./src/lib/**
+
+# Layers
 layers:
   dynamodbStreamExample:
     path: lambda-layer-dir
@@ -59,47 +43,16 @@ layers:
       include:
         - ./**
 
+# Functions
 functions:
-  create:
-    handler: src/ping.create
-    events:
-      - httpApi:
-          path: /create
-          method: post
-    package:
-      include:
-        - ./src/ping.js        
-  list:
-    handler: src/ping.list
-    events:
-      - httpApi:
-          path: /list
-          method: get
-    package:
-      include:
-        - ./src/ping.js
+  - ${file(./environments/functions/create.yml)}
+  - ${file(./environments/functions/list.yml)}
+  - ${file(./environments/functions/dynamoDBStreamCallback.yml)}
 
-  # DynamoDB 流接收函数      
-  dynamoDBStreamCallback:
-    handler: src/pong.handle
-    environment:
-      region: ${self:provider.region}
-    events:
-      - stream:
-          type: dynamodb
-          batchSize: 1
-          startingPosition: LATEST
-          enabled: true
-          arn:
-            Fn::GetAtt:
-              - TableDynamodbStreamExamplePing
-              - StreamArn
-    package:
-      include:
-        - src/pong.js
 
+# Resources
 resources:
   # Stream trigger table
-  - ${file(./local/db/table/table_dynamodb_stream_example_ping.yml)}
+  - ${file(./environments/tables/table_dynamodb_stream_example_ping.yml)}
   # Receive stream data table
-  - ${file(./local/db/table/table_dynamodb_stream_example_pong.yml)}
+  - ${file(./environments/tables/table_dynamodb_stream_example_pong.yml)}

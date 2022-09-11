@@ -1,0 +1,28 @@
+provider:
+  region: eu-west-1
+  environment: 
+    testLambdaVariable: Lambda Environment "${opt:stage, 'local'}" Variable
+    
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  dynamodb:
+    region: ${self:provider.region}
+    stages:
+      - ${opt:stage, self:provider.stage}
+    start:
+      host: localhost
+      port: 8000
+      inMemory: false
+      migrate: true
+      seed: false
+  # DynamoDB 流配置
+  dynamodbStream:
+      host: ${self:custom.dynamodb.start.host}
+      port: ${self:custom.dynamodb.start.port}
+      region: ${self:provider.region}
+      environment:
+      streams:
+        - table: table_dynamodb_stream_example_ping
+          # DynamoDB 流接收函数 
+          functions:
+            - dynamoDBStreamCallback

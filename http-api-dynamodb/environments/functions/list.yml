@@ -1,0 +1,9 @@
+  list:
+    handler: src/index.list
+    events:
+      - httpApi:
+          path: /list
+          method: get
+    package:
+      include:
+        - ./src/index.js

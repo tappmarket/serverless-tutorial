@@ -2,3 +2,8 @@ provider:
   region: eu-west-1
   environment: 
     testLambdaVariable: Lambda Environment "${opt:stage, 'dev'}" Variable
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  dynamodb:
+    stages:
+      - ${opt:stage, self:provider.stage}
